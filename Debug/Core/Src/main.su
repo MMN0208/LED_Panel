@@ -1,0 +1,11 @@
+../Core/Src/main.c:65:13:Latch_Enable	16	static
+../Core/Src/main.c:71:13:Latch_Disable	16	static
+../Core/Src/main.c:77:13:Output_Enable	8	static
+../Core/Src/main.c:80:13:Clock_On	16	static
+../Core/Src/main.c:87:13:Clock_Off	16	static
+../Core/Src/main.c:93:13:Data_Out	16	static
+../Core/Src/main.c:96:9:Get_Bit_Value	16	static
+../Core/Src/main.c:100:6:Led_Display	24	static
+../Core/Src/main.c:116:5:main	16	static
+../Core/Src/main.c:166:6:SystemClock_Config	72	static
+../Core/Src/main.c:206:6:Error_Handler	4	static,ignoring_inline_asm
