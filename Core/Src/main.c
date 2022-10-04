@@ -44,7 +44,14 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+static uint8_t Led_Buffer[NUM_OF_LEDS] = {
+		0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0
+};
 
+static uint8_t Sec_Counter = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -57,7 +64,11 @@ static void Clock_On(uint8_t);
 static void Clock_Off(uint8_t);
 static void Data_Out(GPIO_PinState);
 uint8_t Get_Bit_Value(uint32_t data, uint8_t index);
-void Led_Display(uint32_t);
+void Turn_Led_On(uint8_t num);
+void Turn_Led_Off(uint8_t num);
+void Clear_All_Led(void);
+void Toggle_Every_Led(void);
+void Led_Display(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -97,12 +108,35 @@ uint8_t Get_Bit_Value(uint32_t data, uint8_t index) {
 	data = (data >> index) & 0x01;
 	return data;
 }
-void Led_Display(uint32_t data) {
+void Turn_Led_On(uint8_t num) {
+	Led_Buffer[num] = 0x01;
+}
+void Turn_Led_Off(uint8_t num) {
+	Led_Buffer[num] = 0x00;
+}
+void Clear_All_Led(void) {
+	uint8_t i = 0;
+	for(; i < NUM_OF_LEDS; i++) {
+		Turn_Led_Off(i);
+	}
+}
+void Toggle_Every_Led(void) {
+	if(Sec_Counter == 0) {
+		Turn_Led_Off(NUM_OF_LEDS - 1);
+	}
+	else {
+		Turn_Led_Off(Sec_Counter - 1);
+	}
+	Turn_Led_On(Sec_Counter);
+	Sec_Counter = (Sec_Counter + 1) % NUM_OF_LEDS;
+}
+
+void Led_Display(void) {
 	uint8_t i;
 	Latch_Disable(1);
 	for(i = 0; i < NUM_OF_LEDS; i++) {
 		Clock_Off(1);
-		Data_Out(Get_Bit_Value(data, i));
+		Data_Out(Led_Buffer[i]);
 		Clock_On(10);
 	}
 	Latch_Enable(1);
@@ -141,17 +175,15 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim3);
   Output_Enable();
   HAL_GPIO_WritePin(OE_GPIO_Port, OE_Pin, GPIO_PIN_RESET);
-  uint32_t data = 0x01;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  Led_Display(data);
+	  Toggle_Every_Led();
+	  Led_Display();
 	  HAL_Delay(500);
-	  data = data << 1;
-	  if(data == 0x100000) data = 0x01;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
